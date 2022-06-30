@@ -109,7 +109,7 @@ const RecordingScreen: Component = () => {
     };
 
     const onClickRecord = () => {
-        if (/*!isConnected() || */!deviceFound())
+        if (!isConnected() || !deviceFound())
             return;
 
         setRecordingStep(1);
