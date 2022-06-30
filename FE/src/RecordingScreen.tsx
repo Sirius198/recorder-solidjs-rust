@@ -143,7 +143,6 @@ const RecordingScreen: Component = () => {
 
     const async_send = async (data: Blob) => {
         socket?.send(data);
-        console.log('sending', data);
     };
 
     const playSavedVideo = () => {
