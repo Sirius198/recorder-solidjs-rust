@@ -123,6 +123,7 @@ const RecordingScreen: Component = () => {
 
     const onClickSave = () => {
         mediaRecorder.stop();
+        socket?.send('stop');
         clearInterval(recordingTimerId);
         setRecordingStep(2);
         setTimeout(onNotReceiveFinishMsg, 5000); // This is fallback when not received saved message from BE
