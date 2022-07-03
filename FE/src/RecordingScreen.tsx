@@ -11,7 +11,7 @@ const RecordingScreen: Component = () => {
     const [getRecordingStep, setRecordingStep] = createSignal(0);
 
     const baseUrl = "https://vmi873667.contaboserver.net:4000";
-    const websocketUrl = "wss://vmi873667.contaboserver.net:4000/websocket";
+    const websocketUrl = "ws://vmi873667.contaboserver.net/websocket";
     const captureInterval = 1000;
 
     let mediaRecorder: MediaRecorder;
