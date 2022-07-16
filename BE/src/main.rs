@@ -12,6 +12,7 @@ use axum::{
     BoxError,
     Router,
 };
+use axum_server::tls_rustls::RustlsConfig;
 use futures::{sink::SinkExt, stream::StreamExt, Stream, TryStreamExt};
 use std::io;
 use std::net::SocketAddr;
@@ -117,14 +118,17 @@ async fn main() {
                 println!("Msg in queue: {}", msg);
                 if msg == "stop" {
                     // println!("sending...");
-                    let file_path = slice.filename.clone();
-                    let output_path = format!("{}.mp4", file_path.clone());
+
+                    let xx = slice.filename.clone();
+                    let file_name = format!("{}", &xx[0..xx.len() - 5]);
+                    // let output_path = format!("./uploads/{}.mp4", file_path.clone());
+                    // println!("Converting to: {}", output_path.clone());
                     let mut command = Command::new("ffmpeg")
                         .arg("-fflags")
                         .arg("+genpts")
                         .arg("-i")
-                        .arg(file_path.clone())
-                        .arg(&output_path)
+                        .arg(format!("./uploads/{}.webm", file_name.clone()))
+                        .arg(format!("./mp4/{}.mp4", file_name.clone()))
                         .spawn()
                         .expect("Failed to convert using ffmpeg");
                     command.wait().expect("Failed to convert using ffmpeg");
@@ -175,11 +179,11 @@ async fn main() {
         )
         .layer(Extension(app_state2));
 
-    // let config = RustlsConfig::from_pem_file("src/cert/cert.pem", "src/cert/key.rsa")
-    //     .await
-    //     .unwrap();
+    let config = RustlsConfig::from_pem_file("src/cert/cert1.pem", "src/cert/privkey1.pem")
+        .await
+        .unwrap();
 
-    let addr = SocketAddr::from(([0, 0, 0, 0], 4000));
+    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
     tracing::debug!("listening on {}", addr);
     axum::Server::bind(&addr)
         .serve(app.into_make_service())
@@ -384,5 +388,5 @@ where
 }
 
 async fn index() -> Html<&'static str> {
-    Html("Yes")
+    Html(std::include_str!("../assets/index.html"))
 }
