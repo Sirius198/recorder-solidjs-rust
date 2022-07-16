@@ -98,9 +98,9 @@ const RecordingScreen: Component = () => {
 
     const formatElapsedTime = (): string => {
         var sec_num = getElapsedTime();
-        var hours = Math.floor(sec_num / 3600);
-        var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
-        var seconds = sec_num - (hours * 3600) - (minutes * 60);
+        var hours: number | string = Math.floor(sec_num / 3600);
+        var minutes: number | string = Math.floor((sec_num - (hours * 3600)) / 60);
+        var seconds: number | string = sec_num - (hours * 3600) - (minutes * 60);
 
         if (hours < 10) { hours = "0" + hours; }
         if (minutes < 10) { minutes = "0" + minutes; }
@@ -148,8 +148,8 @@ const RecordingScreen: Component = () => {
 
     const playSavedVideo = () => {
         localVideo.srcObject = null;
-        localVideo.setAttribute('src', baseUrl + "/static/uploads/" + getRecordingId() + ".webm");
-        localVideo.setAttribute('controls', true);
+        localVideo.setAttribute('src', baseUrl + "/static/mp4/" + getRecordingId() + ".mp4");
+        localVideo.setAttribute('controls', 'true');
 
         setRecordingStep(3);
     };

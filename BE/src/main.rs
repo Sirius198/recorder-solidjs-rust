@@ -12,7 +12,6 @@ use axum::{
     BoxError,
     Router,
 };
-use axum_server::tls_rustls::RustlsConfig;
 use futures::{sink::SinkExt, stream::StreamExt, Stream, TryStreamExt};
 use std::io;
 use std::net::SocketAddr;
@@ -39,6 +38,8 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 // use std::collections::VecDeque;
 use std::thread;
 use std::time::Duration;
+
+use std::process::Command;
 
 struct BinarySlice {
     filename: String,
@@ -116,6 +117,17 @@ async fn main() {
                 println!("Msg in queue: {}", msg);
                 if msg == "stop" {
                     // println!("sending...");
+                    let file_path = slice.filename.clone();
+                    let output_path = format!("{}.mp4", file_path.clone());
+                    let mut command = Command::new("ffmpeg")
+                        .arg("-fflags")
+                        .arg("+genpts")
+                        .arg("-i")
+                        .arg(file_path.clone())
+                        .arg(&output_path)
+                        .spawn()
+                        .expect("Failed to convert using ffmpeg");
+                    command.wait().expect("Failed to convert using ffmpeg");
 
                     match tx.send(String::from(slice.filename)) {
                         Ok(obj) => {
@@ -163,13 +175,13 @@ async fn main() {
         )
         .layer(Extension(app_state2));
 
-    let config = RustlsConfig::from_pem_file("src/cert/cert.pem", "src/cert/key.rsa")
-        .await
-        .unwrap();
+    // let config = RustlsConfig::from_pem_file("src/cert/cert.pem", "src/cert/key.rsa")
+    //     .await
+    //     .unwrap();
 
     let addr = SocketAddr::from(([0, 0, 0, 0], 4000));
     tracing::debug!("listening on {}", addr);
-    axum_server::bind_rustls(addr, config)
+    axum::Server::bind(&addr)
         .serve(app.into_make_service())
         .await
         .unwrap();
@@ -372,5 +384,5 @@ where
 }
 
 async fn index() -> Html<&'static str> {
-    Html(std::include_str!("../assets/index.html"))
+    Html("Yes")
 }
